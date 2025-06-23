@@ -1,0 +1,1 @@
+arm-none-eabi-objdump build/output.elf -D > build/outputdump.txt
