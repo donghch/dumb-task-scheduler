@@ -1,1 +1,1 @@
-qemu-system-arm -cpu cortex-m3 -machine stm32vldiscovery -s -S -kernel build/output.elf
+qemu-system-arm -cpu cortex-m3 -machine stm32vldiscovery -s -S -kernel src/dist.elf

@@ -28,7 +28,7 @@ struct task_regstate {
     uint32_t control;
 };
 
-struct task_t {
+typedef struct {
     void (*task)(void** args);
     uint8_t priority;
     uint32_t stack_size;
@@ -36,7 +36,7 @@ struct task_t {
     void *stack;
     struct task_regstate regstate;
     bool has_ran;
-};
+} task_t;
 
 
 

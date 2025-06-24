@@ -2,7 +2,7 @@
 #define _DEF_H_
 
 #include "task.h"
-extern struct task_t *current_task;
+extern task_t *current_task;
 
 /* Task Schedulers */
 #define SCHEDULER_TASK_ARRAY_SIZE 10

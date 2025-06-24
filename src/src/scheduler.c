@@ -5,14 +5,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-static struct task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
-
-struct task_t *current_task = NULL;
+static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
+task_t *current_task = NULL;
 
 void idle_task(void **args);
 
 static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
-static struct task_t idle = {
+static task_t idle = {
     .task = idle_task,
     .priority = 0,
     .stack_size = IDLE_TASK_STACK_SIZE,
@@ -43,7 +42,7 @@ void schedler_init(void) {
     current_task = &task_array[0]; // Set the first task as the current task
 }
 
-struct task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack) {
+task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack) {
     for (int i = 0; i < SCHEDULER_TASK_ARRAY_SIZE; i++) {
         if (task_array[i].task == NULL) {
             task_array[i].task = task;

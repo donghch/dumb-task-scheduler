@@ -11,9 +11,14 @@ void systick_handler(void) {
     }
 }
 
+int mm = 300;
+int nn;
+
 int main(void) {
     int a = 20;
     int b = 30;
+    b = mm;
+    b = nn;
     start_timer(); // Initialize the system timer
     run();
     return 0;
