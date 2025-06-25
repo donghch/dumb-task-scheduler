@@ -28,15 +28,17 @@ typedef struct {
  * @param queue Pointer to the task queue to be initialized.
  * @param capacity Maximum number of tasks the queue can hold.
  * @param tasks_array Pointer to an array of tasks that will be used by the queue.
+ * 
+ * @return int Returns 0 on success, -1 if initialization fails due to invalid parameters.
  */
-void task_queue_init(task_queue_t *queue, uint8_t capacity, task_t *tasks_array);
+int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t *tasks_array);
 
 /**
  * @brief Insert a task into the task queue.
  * 
  * @param queue Pointer to the task queue.
  * @param task Pointer to the task to be inserted.
- * @return int Returns 0 on success, -1 if the queue is full.
+ * @return int Returns 0 on success, -1 if the queue is full, or -2 if invalid parameters are provided.
  */
 int task_queue_push(task_queue_t *queue, task_t *task);
 

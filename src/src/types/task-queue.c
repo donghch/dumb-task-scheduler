@@ -1,15 +1,26 @@
 #include "types/task-queue.h"
 #include <stdlib.h>
 
-void task_queue_init(task_queue_t *queue, uint8_t capacity, task_t *tasks_array) {
+int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t *tasks_array) {
+
+    if (queue == NULL || tasks_array == NULL || capacity == 0) {
+        return -1; // Invalid parameters
+    }
+
     queue->tasks = tasks_array;
     queue->capacity = capacity;
     queue->size = 0;
     queue->head = 0;
     queue->tail = 0;
+
+    return 0;
 }
 
 int task_queue_push(task_queue_t *queue, task_t *task) {
+
+    if (queue == NULL || task == NULL) {
+        return -2; // Invalid parameters
+    }
     
     if (queue->size >= queue->capacity) {
         return -1; // Queue is full, cannot push new task
