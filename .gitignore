@@ -6,3 +6,4 @@ CMakeFiles
 Makefile
 *.cmake
 *.elf
+tests/tests
