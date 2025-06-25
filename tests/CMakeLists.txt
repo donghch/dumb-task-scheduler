@@ -18,3 +18,4 @@ file(GLOB_RECURSE CODE_HEADERS ${INCLUDE_DIR}/*.h)
 add_executable(tests ${SOURCES} ${CODE_SOURCES})
 
 target_include_directories(tests PUBLIC ${TEST_INCLUDE_DIR} ${INCLUDE_DIR})
+target_compile_options(tests PRIVATE -g)
