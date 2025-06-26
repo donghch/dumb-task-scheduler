@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-struct task_regstate {
+typedef struct {
     uint32_t r0;
     uint32_t r1;
     uint32_t r2;
@@ -26,7 +26,7 @@ struct task_regstate {
     uint32_t faultmask;
     uint32_t basepri;
     uint32_t control;
-};
+} task_regstate_t;
 
 typedef struct {
     void (*task)(void** args);
@@ -34,7 +34,7 @@ typedef struct {
     uint32_t stack_size;
     uint32_t sleep_time;
     void *stack;
-    struct task_regstate regstate;
+    task_regstate_t regstate;
     bool has_ran;
 } task_t;
 
