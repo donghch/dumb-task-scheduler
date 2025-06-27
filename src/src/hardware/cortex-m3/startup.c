@@ -91,6 +91,7 @@ context_t *systick_handler_c(context_t *context) {
     // retrieve next task
     current_task->context = *context;
     task_t *next_task = select_next_task();
+    current_task = next_task;
     return &(next_task->context);
 
 }
