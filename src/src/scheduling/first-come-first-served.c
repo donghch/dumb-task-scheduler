@@ -4,6 +4,7 @@
 #include "def.h"
 
 extern task_queue_t task_queue;
+extern task_t idle;
 
 /**
  * Selects the next task to run based on the scheduling algorithm.
@@ -13,7 +14,7 @@ extern task_queue_t task_queue;
  */
 task_t *select_next_task() {
     task_queue_t *queue = &task_queue;
-    return (queue->size > 0) ? &queue->tasks[queue->head] : NULL;
+    return (queue->size > 0) ? &queue->tasks[queue->head] : &idle;
 }
 
 /**
