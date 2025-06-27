@@ -1,4 +1,7 @@
-
+/**
+ * @file scheduler.c
+ * @brief Implementation of the task scheduler.
+ */
 #include "task.h"
 #include "def.h"
 #include "types/task-queue.h"
@@ -7,38 +10,52 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
+/* Scheduler Data */
 task_queue_t task_queue;
 context_t current_context;
 task_t *current_task = NULL;
-
-extern void start_systick(void);
-task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack, uint32_t stack_size);
-
-static void idle_task(void **args);
-
 static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
+static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
+static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
 
-void idle_task(void** args) {
-    int a = 0;
-    while (a < 10000) {
-        a++;
-    }
+/* Scheduler Function Declarations */
+task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack, uint32_t stack_size);
+extern void idle_task(void **args);
+extern void dumb_task(void **args);
+extern void start_systick(void);
+extern void scheduler_load_task(void *stacktop, void (*task)(void **args));
+void scheduler_task_stack_init(task_t *task);
 
-    while (1) {
-        a = a;
-    }
-}
+task_t idle = {
+    .task = idle_task,
+    .priority = 0,
+    .stack_size = IDLE_TASK_STACK_SIZE,
+    .sleep_time = 0,
+    .stack_top = idle_task_stack + IDLE_TASK_STACK_SIZE,
+    .has_ran = false
+};
 
 /* Scheduler Functions */
 
+/**
+ * @brief Initializes the scheduler.
+ * 
+ * This function initializes the task queue and adds the idle task to the scheduler.
+ */
 void schedler_init(void) {
     task_queue_init(&task_queue, SCHEDULER_TASK_ARRAY_SIZE, task_array);
-    scheduler_add_task(idle_task, 0, idle_task_stack, IDLE_TASK_STACK_SIZE);
+    scheduler_add_task(dumb_task, 0, dumb_task_stack, IDLE_TASK_STACK_SIZE);
 }
 
-void scheduler_task_stack_init(task_t *task);
-
+/**
+ * @brief Adds a task to the scheduler.
+ * 
+ * @param task The function pointer to the task to be added.
+ * @param priority The priority of the task.
+ * @param stack Pointer to the stack memory for the task.
+ * @param stack_size Size of the stack memory for the task.
+ * @return Pointer to the newly added task, or NULL if an error occurred.
+ */
 task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack, uint32_t stack_size) {
 
     int err;
@@ -52,6 +69,7 @@ task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *st
         .has_ran = false
     };
 
+    scheduler_task_stack_init(&new_task);
     err = task_queue_push(&task_queue, &new_task);
     if (err != 0) {
         return NULL; // Error adding task
@@ -59,16 +77,23 @@ task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *st
     return &new_task; // Return the newly added task
 }
 
-extern void scheduler_load_task(void *stacktop, void (*task)(void **args));
 
+/**
+ * @brief Starts the scheduler.
+ * 
+ * This function initializes the idle task and starts the scheduler.
+ * It should never return.
+ */
 void scheduler_start(void) {
     // Start the scheduler (this is a placeholder, actual implementation may vary)
     int a = 0;
+    current_task = &idle;
+    scheduler_task_stack_init(&idle);
     start_systick();
-    current_task = &task_queue.tasks[0];
     scheduler_load_task(idle_task_stack + IDLE_TASK_STACK_SIZE, idle_task);
     // it should never reach here
 }
+
 
 void scheduler_task_stack_init(task_t *task) {
     task->context.r0 = 0;
