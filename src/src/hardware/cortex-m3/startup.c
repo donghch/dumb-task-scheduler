@@ -1,13 +1,16 @@
 #include <stdint.h>
+#include "task.h"
+#include "hardware/cortex-m3.h"
 
 
 // cortex m3
 extern int main(void);
 
-extern int systick_handler(void);
+extern void systick_handler(void);
 
 extern uint32_t __stacktop__; // Defined in linker script
 void startup(void);
+extern task_t *current_task;
 
 const uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)(&__stacktop__),      // Initial stack pointer
@@ -79,4 +82,15 @@ void _read_r(int file, char *ptr, int len) {
 
 void _sbrk_r(void *ptr) {
     // No operation for setting the program break
+}
+
+extern task_t *select_next_task();
+
+context_t *systick_handler_c(context_t *context) {
+    
+    // retrieve next task
+    current_task->context = *context;
+    task_t *next_task = select_next_task();
+    return &(next_task->context);
+
 }
