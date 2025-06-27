@@ -6,3 +6,7 @@ target_sources(
     startup.s
     systick.c
 )
+
+add_subdirectory(
+    types
+)
