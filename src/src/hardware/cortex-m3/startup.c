@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "task.h"
 #include "hardware/cortex-m3.h"
+#include "types/task-queue.h"
 
 
 // cortex m3
@@ -11,6 +12,8 @@ extern void systick_handler(void);
 extern uint32_t __stacktop__; // Defined in linker script
 void startup(void);
 extern task_t *current_task;
+extern task_queue_t task_queue;
+extern task_t idle;
 
 const uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)(&__stacktop__),      // Initial stack pointer
@@ -91,7 +94,9 @@ context_t *systick_handler_c(context_t *context) {
     // retrieve next task
     current_task->context = *context;
     task_t *next_task = select_next_task();
-    current_task = next_task;
+    task_queue_pop(&task_queue);
+    task_queue_push(&task_queue, current_task);
+    current_task = next_task; 
     return &(next_task->context);
 
 }

@@ -16,12 +16,14 @@ context_t current_context;
 task_t *current_task = NULL;
 static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
 static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
+static uint8_t random_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
 static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
 
 /* Scheduler Function Declarations */
 task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack, uint32_t stack_size);
 extern void idle_task(void **args);
 extern void dumb_task(void **args);
+extern void random_task(void **args);
 extern void start_systick(void);
 extern void scheduler_load_task(void *stacktop, void (*task)(void **args));
 void scheduler_task_stack_init(task_t *task);
@@ -45,6 +47,7 @@ task_t idle = {
 void schedler_init(void) {
     task_queue_init(&task_queue, SCHEDULER_TASK_ARRAY_SIZE, task_array);
     scheduler_add_task(dumb_task, 0, dumb_task_stack, IDLE_TASK_STACK_SIZE);
+    scheduler_add_task(random_task, 0, random_task_stack, IDLE_TASK_STACK_SIZE);
 }
 
 /**
@@ -87,7 +90,7 @@ task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *st
 void scheduler_start(void) {
     // Start the scheduler (this is a placeholder, actual implementation may vary)
     int a = 0;
-    current_task = &idle;
+    current_task = &idle; 
     scheduler_task_stack_init(&idle);
     start_systick();
     scheduler_load_task(idle_task_stack + IDLE_TASK_STACK_SIZE, idle_task);
