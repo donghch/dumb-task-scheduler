@@ -13,8 +13,7 @@ extern task_t idle;
  * @return Pointer to the next task to run, or NULL if no task is available.
  */
 task_t *select_next_task() {
-    task_queue_t *queue = &task_queue;
-    return (queue->size > 0) ? &queue->tasks[queue->head] : &idle;
+    return task_queue_head(&task_queue);
 }
 
 /**
