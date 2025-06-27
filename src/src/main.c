@@ -1,20 +1,19 @@
 
 
 extern void run(void);
-extern void start_timer(void);
+extern void scheduler_start(void);
+extern void schedler_init(void);
 
-void systick_handler(void) {
-    int m = 10;
-    while (m < 100)
-    {
-        m++;
-    }
-}
+int mm = 300;
+int nn;
 
 int main(void) {
     int a = 20;
     int b = 30;
-    start_timer(); // Initialize the system timer
+    b = mm;
+    b = nn;
+    schedler_init();
+    scheduler_start();
     run();
     return 0;
 }

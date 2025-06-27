@@ -2,3 +2,9 @@
 build
 CMakeCache.txt
 *.out
+CMakeFiles
+Makefile
+*.cmake
+*.elf
+tests/tests
+*.txt
