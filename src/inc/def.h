@@ -2,11 +2,11 @@
 #define _DEF_H_
 
 #include "task.h"
-extern task_t *current_task;
+#include "types/task-queue.h"
 
 /* Task Schedulers */
 #define SCHEDULER_TASK_ARRAY_SIZE 10
-#define CURRENT_TASK current_task;
 #define IDLE_TASK_STACK_SIZE 256
+
 
 #endif
