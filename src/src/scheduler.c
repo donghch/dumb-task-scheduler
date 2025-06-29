@@ -14,9 +14,9 @@
 task_queue_t task_queue;
 context_t current_context;
 task_t *current_task = NULL;
-static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
-static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
-static uint8_t random_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
+static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE];
+static uint8_t random_task_stack[IDLE_TASK_STACK_SIZE];
+static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE];
 static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
 
 /* Scheduler Function Declarations */
@@ -46,8 +46,8 @@ task_t idle = {
  */
 void schedler_init(void) {
     task_queue_init(&task_queue, SCHEDULER_TASK_ARRAY_SIZE, task_array);
-    scheduler_add_task(dumb_task, 0, dumb_task_stack, IDLE_TASK_STACK_SIZE);
     scheduler_add_task(random_task, 0, random_task_stack, IDLE_TASK_STACK_SIZE);
+    scheduler_add_task(dumb_task, 0, dumb_task_stack, IDLE_TASK_STACK_SIZE);
 }
 
 /**

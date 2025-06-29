@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "hardware/cortex-m3.h"
+#include "hardware/cortex-m3/context.h"
 
 typedef struct {
     void (*task)(void** args);
