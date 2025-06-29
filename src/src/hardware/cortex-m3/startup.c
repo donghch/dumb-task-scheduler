@@ -8,6 +8,7 @@
 extern int main(void);
 
 extern void systick_handler(void);
+extern void pendsv_handler(void);
 
 extern uint32_t __stacktop__; // Defined in linker script
 void startup(void);
@@ -30,7 +31,7 @@ const uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)0xC, // SVCall handler
     (uint32_t)0xD, // Debug Monitor handler
     (uint32_t)0xE, // Reserved
-    (uint32_t)0xF, // PendSV handler
+    (uint32_t)(pendsv_handler), // PendSV handler
     (uint32_t)(systick_handler), // SysTick handler
     // Add other exception handlers here
 };
@@ -89,7 +90,11 @@ void _sbrk_r(void *ptr) {
 
 extern task_t *select_next_task();
 
-context_t *systick_handler_c(context_t *context) {
+void systick_handler_c(void) {
+    SYS_CTRL_ICSR |= (1 << 28); // Trigger PendSV exception
+}
+
+context_t *pendsv_handler_c(context_t *context) {
     
     // retrieve next task
     current_task->context = *context;

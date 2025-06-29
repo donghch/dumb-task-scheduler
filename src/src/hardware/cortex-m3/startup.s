@@ -5,14 +5,33 @@
 
     .section .text
     .global systick_handler
+    .global pendsv_handler
+    .global save_context
     .global enter_user_mode
     .global load_context
     .global systick_handler_c
+    .global pendsv_handler_c
     .extern current_context
+
     .thumb_func
-
 systick_handler:
+    PUSH {lr}
+    BL systick_handler_c
+    POP {lr}
+    BX lr
 
+    .thumb_func
+pendsv_handler:
+    PUSH {lr}
+    BL save_context
+    LDR r0, =current_context
+    BL pendsv_handler_c
+    BL load_context
+    POP {lr}
+    BX lr
+
+    .thumb_func
+save_context:
     # save all registers to current context  
     LDR r0, =current_context
     MRS r2, PSP
@@ -47,11 +66,10 @@ systick_handler:
     LDR r1, [r2, #28]
     STR r1, [r0, #64]
 
-    # call the C handler
-    PUSH {lr}
-    BL systick_handler_c
-    POP {lr}
+    BX lr
 
+    .thumb_func
+load_context:
     # restore the context
     # load back sp first
     LDR r2, [r0, #56]
@@ -87,8 +105,6 @@ systick_handler:
 
     # restore CONTROL register
     BX lr
-
-load_context:
 
 
     .thumb_func

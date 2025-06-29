@@ -13,7 +13,7 @@ void idle_task(void** args) {
     spinlock_release(&lock);
 
     while (1) {
-        a = a;
+        ;
     }
 }
 
@@ -25,7 +25,7 @@ void dumb_task(void **args) {
     }
     spinlock_release(&lock);
     while (1) {
-        b = b;
+        ;
     }
 }
 
@@ -37,6 +37,6 @@ void random_task(void **args) {
     }
     spinlock_release(&lock);
     while (1) {
-        c = c;
+        ;
     }
 }
