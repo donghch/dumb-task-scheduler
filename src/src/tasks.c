@@ -37,6 +37,6 @@ void random_task(void **args) {
     }
     spinlock_release(&lock);
     while (1) {
-        ;
+        asm ("SVC #158");
     }
 }

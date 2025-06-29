@@ -10,6 +10,7 @@ extern int main(void);
 
 extern void systick_handler(void);
 extern void pendsv_handler(void);
+extern void syscall_handler(void);
 
 extern uint32_t __stacktop__; // Defined in linker script
 void startup(void);
@@ -29,7 +30,7 @@ const uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)0x9, // Reserved
     (uint32_t)0xA, // Reserved
     (uint32_t)0xB, // Reserved
-    (uint32_t)0xC, // SVCall handler
+    (uint32_t)(syscall_handler), // SVCall handler
     (uint32_t)0xD, // Debug Monitor handler
     (uint32_t)0xE, // Reserved
     (uint32_t)(pendsv_handler), // PendSV handler
