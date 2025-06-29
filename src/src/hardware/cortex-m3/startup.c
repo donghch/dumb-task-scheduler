@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "task.h"
-#include "hardware/cortex-m3.h"
+#include "hardware/cortex-m3/context.h"
+#include "hardware/cortex-m3/def.h"
 #include "types/task-queue.h"
 
 
