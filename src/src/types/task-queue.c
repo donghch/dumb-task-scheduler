@@ -1,7 +1,7 @@
 #include "types/task-queue.h"
 #include <stdlib.h>
 
-int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t *tasks_array) {
+int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t **tasks_array) {
 
     if (queue == NULL || tasks_array == NULL || capacity == 0) {
         return -1; // Invalid parameters
@@ -26,7 +26,7 @@ int task_queue_push(task_queue_t *queue, task_t *task) {
         return -1; // Queue is full, cannot push new task
     }
     
-    queue->tasks[queue->tail] = *task; // Copy the task into the queue
+    queue->tasks[queue->tail] = task; // Copy the task into the queue
     queue->tail = (queue->tail + 1) % queue->capacity; // Update tail index
     queue->size++;
     
@@ -47,5 +47,5 @@ task_t *task_queue_head(task_queue_t *queue) {
         return NULL; // Queue is empty, no head task
     }
     
-    return &queue->tasks[queue->head];
+    return queue->tasks[queue->head];
 }
