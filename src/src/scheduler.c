@@ -14,10 +14,10 @@
 task_queue_t task_queue;
 context_t current_context;
 task_t *current_task = NULL;
+static task_t *task_array[SCHEDULER_TASK_ARRAY_SIZE];
 static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE];
 static uint8_t random_task_stack[IDLE_TASK_STACK_SIZE];
 static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE];
-static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
 
 /* Scheduler Function Declarations */
 task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack, uint32_t stack_size);
@@ -37,6 +37,24 @@ task_t idle = {
     .has_ran = false
 };
 
+task_t dumb = {
+    .task = dumb_task,
+    .priority = 0,
+    .stack_size = IDLE_TASK_STACK_SIZE,
+    .sleep_time = 0,
+    .stack_top = dumb_task_stack + IDLE_TASK_STACK_SIZE,
+    .has_ran = false
+};
+
+task_t ran = {
+    .task = random_task,
+    .priority = 0,
+    .stack_size = IDLE_TASK_STACK_SIZE,
+    .sleep_time = 0,
+    .stack_top = random_task_stack + IDLE_TASK_STACK_SIZE,
+    .has_ran = false
+};
+
 /* Scheduler Functions */
 
 /**
@@ -46,8 +64,10 @@ task_t idle = {
  */
 void schedler_init(void) {
     task_queue_init(&task_queue, SCHEDULER_TASK_ARRAY_SIZE, task_array);
-    scheduler_add_task(random_task, 0, random_task_stack, IDLE_TASK_STACK_SIZE);
-    scheduler_add_task(dumb_task, 0, dumb_task_stack, IDLE_TASK_STACK_SIZE);
+    scheduler_task_stack_init(&ran);
+    scheduler_task_stack_init(&dumb);
+    task_queue_push(&task_queue, &ran);
+    task_queue_push(&task_queue, &dumb);
 }
 
 /**
