@@ -34,7 +34,8 @@ task_t idle = {
     .stack_size = IDLE_TASK_STACK_SIZE,
     .sleep_time = 0,
     .stack_top = idle_task_stack + IDLE_TASK_STACK_SIZE,
-    .has_ran = false
+    .has_ran = false, 
+    .state = TASK_STATE_READY
 };
 
 task_t dumb = {
@@ -43,7 +44,8 @@ task_t dumb = {
     .stack_size = IDLE_TASK_STACK_SIZE,
     .sleep_time = 0,
     .stack_top = dumb_task_stack + IDLE_TASK_STACK_SIZE,
-    .has_ran = false
+    .has_ran = false, 
+    .state = TASK_STATE_READY
 };
 
 task_t ran = {
@@ -52,7 +54,8 @@ task_t ran = {
     .stack_size = IDLE_TASK_STACK_SIZE,
     .sleep_time = 0,
     .stack_top = random_task_stack + IDLE_TASK_STACK_SIZE,
-    .has_ran = false
+    .has_ran = false, 
+    .state = TASK_STATE_READY
 };
 
 /* Scheduler Functions */
