@@ -1,10 +1,6 @@
+
 #include "task.h"
 #include <stdlib.h>
-#include "types/task-queue.h"
-#include "def.h"
-
-extern task_queue_t task_queue;
-extern task_t idle;
 
 /**
  * Selects the next task to run based on the scheduling algorithm.
@@ -13,15 +9,7 @@ extern task_t idle;
  * @return Pointer to the next task to run, or NULL if no task is available.
  */
 task_t *select_next_task() {
-    task_t *next_task = task_queue_head(&task_queue);
-
-    while (next_task != NULL && next_task->state != TASK_STATE_READY) {
-        task_queue_pop(&task_queue);
-        task_queue_push(&task_queue, next_task);
-        next_task = task_queue_head(&task_queue);
-    }
-    
-    return next_task;
+    return NULL;
 }
 
 /**

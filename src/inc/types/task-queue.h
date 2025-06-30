@@ -15,7 +15,7 @@
  * @brief Structure representing a task queue.
  */
 typedef struct {
-    task_t *tasks;
+    task_t **tasks;
     uint8_t capacity;
     uint8_t size;
     uint8_t head;
@@ -31,7 +31,7 @@ typedef struct {
  * 
  * @return int Returns 0 on success, -1 if initialization fails due to invalid parameters.
  */
-int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t *tasks_array);
+int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t **tasks_array);
 
 /**
  * @brief Insert a task into the task queue.

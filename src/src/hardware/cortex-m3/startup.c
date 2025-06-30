@@ -1,16 +1,23 @@
 #include <stdint.h>
 #include "task.h"
-#include "hardware/cortex-m3.h"
+#include "hardware/cortex-m3/context.h"
+#include "hardware/cortex-m3/def.h"
+#include "types/task-queue.h"
 
 
 // cortex m3
 extern int main(void);
 
 extern void systick_handler(void);
+extern void pendsv_handler(void);
+extern void syscall_handler(void);
 
 extern uint32_t __stacktop__; // Defined in linker script
 void startup(void);
 extern task_t *current_task;
+extern context_t current_context;
+extern task_queue_t task_queue;
+extern task_t idle;
 
 const uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)(&__stacktop__),      // Initial stack pointer
@@ -24,10 +31,10 @@ const uint32_t vectors[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)0x9, // Reserved
     (uint32_t)0xA, // Reserved
     (uint32_t)0xB, // Reserved
-    (uint32_t)0xC, // SVCall handler
+    (uint32_t)(syscall_handler), // SVCall handler
     (uint32_t)0xD, // Debug Monitor handler
     (uint32_t)0xE, // Reserved
-    (uint32_t)0xF, // PendSV handler
+    (uint32_t)(pendsv_handler), // PendSV handler
     (uint32_t)(systick_handler), // SysTick handler
     // Add other exception handlers here
 };
@@ -86,12 +93,23 @@ void _sbrk_r(void *ptr) {
 
 extern task_t *select_next_task();
 
-context_t *systick_handler_c(context_t *context) {
-    
-    // retrieve next task
-    current_task->context = *context;
-    task_t *next_task = select_next_task();
-    current_task = next_task;
-    return &(next_task->context);
+void systick_handler_c(void) {
+    SYS_CTRL_ICSR |= (1 << 28); // Trigger PendSV exception
+}
 
+void pendsv_handler_c(context_t *context) {
+    
+    task_t *next_task;
+
+    // save current task
+    current_task->context = *context;
+    current_task->state = TASK_STATE_READY;
+    task_queue_push(&task_queue, current_task);
+
+    // load next task
+    next_task = select_next_task();
+    task_queue_pop(&task_queue);
+    current_task = next_task; 
+    current_context = current_task->context;
+    current_task->state = TASK_STATE_RUNNING;
 }

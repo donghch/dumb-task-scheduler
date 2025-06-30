@@ -5,7 +5,7 @@
 #include "task.h"
 #include "def.h"
 #include "types/task-queue.h"
-#include "hardware/cortex-m3.h"
+#include "hardware/cortex-m3/context.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -14,14 +14,16 @@
 task_queue_t task_queue;
 context_t current_context;
 task_t *current_task = NULL;
-static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
-static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE] __attribute__((aligned(8)));
-static task_t task_array[SCHEDULER_TASK_ARRAY_SIZE];
+static task_t *task_array[SCHEDULER_TASK_ARRAY_SIZE];
+static uint8_t idle_task_stack[IDLE_TASK_STACK_SIZE];
+static uint8_t random_task_stack[IDLE_TASK_STACK_SIZE];
+static uint8_t dumb_task_stack[IDLE_TASK_STACK_SIZE];
 
 /* Scheduler Function Declarations */
 task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *stack, uint32_t stack_size);
 extern void idle_task(void **args);
 extern void dumb_task(void **args);
+extern void random_task(void **args);
 extern void start_systick(void);
 extern void scheduler_load_task(void *stacktop, void (*task)(void **args));
 void scheduler_task_stack_init(task_t *task);
@@ -32,7 +34,28 @@ task_t idle = {
     .stack_size = IDLE_TASK_STACK_SIZE,
     .sleep_time = 0,
     .stack_top = idle_task_stack + IDLE_TASK_STACK_SIZE,
-    .has_ran = false
+    .has_ran = false, 
+    .state = TASK_STATE_READY
+};
+
+task_t dumb = {
+    .task = dumb_task,
+    .priority = 0,
+    .stack_size = IDLE_TASK_STACK_SIZE,
+    .sleep_time = 0,
+    .stack_top = dumb_task_stack + IDLE_TASK_STACK_SIZE,
+    .has_ran = false, 
+    .state = TASK_STATE_READY
+};
+
+task_t ran = {
+    .task = random_task,
+    .priority = 0,
+    .stack_size = IDLE_TASK_STACK_SIZE,
+    .sleep_time = 0,
+    .stack_top = random_task_stack + IDLE_TASK_STACK_SIZE,
+    .has_ran = false, 
+    .state = TASK_STATE_READY
 };
 
 /* Scheduler Functions */
@@ -44,7 +67,10 @@ task_t idle = {
  */
 void schedler_init(void) {
     task_queue_init(&task_queue, SCHEDULER_TASK_ARRAY_SIZE, task_array);
-    scheduler_add_task(dumb_task, 0, dumb_task_stack, IDLE_TASK_STACK_SIZE);
+    scheduler_task_stack_init(&ran);
+    scheduler_task_stack_init(&dumb);
+    task_queue_push(&task_queue, &ran);
+    task_queue_push(&task_queue, &dumb);
 }
 
 /**
@@ -87,7 +113,7 @@ task_t *scheduler_add_task(void (*task)(void **args), uint8_t priority, void *st
 void scheduler_start(void) {
     // Start the scheduler (this is a placeholder, actual implementation may vary)
     int a = 0;
-    current_task = &idle;
+    current_task = &idle; 
     scheduler_task_stack_init(&idle);
     start_systick();
     scheduler_load_task(idle_task_stack + IDLE_TASK_STACK_SIZE, idle_task);
