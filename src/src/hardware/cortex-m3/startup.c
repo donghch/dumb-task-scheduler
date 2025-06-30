@@ -99,13 +99,17 @@ void systick_handler_c(void) {
 
 void pendsv_handler_c(context_t *context) {
     
-    // retrieve next task
     task_t *next_task;
 
+    // save current task
     current_task->context = *context;
+    current_task->state = TASK_STATE_READY;
+    task_queue_push(&task_queue, current_task);
+
+    // load next task
     next_task = select_next_task();
     task_queue_pop(&task_queue);
-    task_queue_push(&task_queue, current_task);
     current_task = next_task; 
     current_context = current_task->context;
+    current_task->state = TASK_STATE_RUNNING;
 }
