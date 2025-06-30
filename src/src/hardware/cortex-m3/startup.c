@@ -15,6 +15,7 @@ extern void syscall_handler(void);
 extern uint32_t __stacktop__; // Defined in linker script
 void startup(void);
 extern task_t *current_task;
+extern context_t current_context;
 extern task_queue_t task_queue;
 extern task_t idle;
 
@@ -96,14 +97,15 @@ void systick_handler_c(void) {
     SYS_CTRL_ICSR |= (1 << 28); // Trigger PendSV exception
 }
 
-context_t *pendsv_handler_c(context_t *context) {
+void pendsv_handler_c(context_t *context) {
     
     // retrieve next task
+    task_t *next_task;
+
     current_task->context = *context;
-    task_t *next_task = select_next_task();
+    next_task = select_next_task();
     task_queue_pop(&task_queue);
     task_queue_push(&task_queue, current_task);
     current_task = next_task; 
-    return &(next_task->context);
-
+    current_context = current_task->context;
 }

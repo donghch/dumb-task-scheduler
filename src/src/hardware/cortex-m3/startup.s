@@ -72,6 +72,7 @@ save_context:
 load_context:
     # restore the context
     # load back sp first
+    LDR r0, =current_context
     LDR r2, [r0, #56]
     MSR PSP, r2
     ISB
