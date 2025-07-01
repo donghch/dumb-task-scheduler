@@ -103,7 +103,9 @@ void pendsv_handler_c(context_t *context) {
 
     // save current task
     current_task->context = *context;
-    current_task->state = TASK_STATE_READY;
+    if (current_task->state == TASK_STATE_RUNNING) {
+        current_task->state = TASK_STATE_READY;
+    }
     task_queue_push(&task_queue, current_task);
 
     // load next task
