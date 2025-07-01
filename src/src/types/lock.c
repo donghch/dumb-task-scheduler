@@ -16,18 +16,16 @@ void lock_acquire(lock_t *lock) {
         return;
     }
 
-    while (1) {
-        spinlock_acquire(&lock->guard);
-        if (lock->flag == 0) {
-            lock->flag = 1;
-            spinlock_release(&lock->guard);
-            return;
-        } else {
-            current_task->state = TASK_STATE_SLEEPING;
-            task_queue_push(&lock->wait_queue, current_task);
-            spinlock_release(&lock->guard);
-            asm ("SVC #158");
-        }
+    spinlock_acquire(&lock->guard);
+    if (lock->flag == 0) {
+        lock->flag = 1;
+        spinlock_release(&lock->guard);
+        return;
+    } else {
+        current_task->state = TASK_STATE_SLEEPING;
+        task_queue_push(&lock->wait_queue, current_task);
+        spinlock_release(&lock->guard);
+        asm ("SVC #158");
     }
 }
 
