@@ -5,4 +5,5 @@ target_sources(
         lock.c
         spinlock.c
         condvar.c
+        semaphore.c
 )
