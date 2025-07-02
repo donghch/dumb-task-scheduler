@@ -1,20 +1,25 @@
-
+#include <stdlib.h>
 #include "types/spinlock.h"
 #include "types/lock.h"
 #include "types/condvar.h"
+#include "types/semaphore.h"
 
 spinlock_t lock;
 task_t *wait_array[10];
-lock_t lc = {
-    .guard = {0},
-    .flag = 0,
-    .wait_queue = {
-        .tasks = wait_array,
-        .capacity = 10,
-        .size = 0,
-        .head = 0,
-        .tail = 0
-    }
+sem_t sem = {
+    .value = 0,
+    .lock = {
+        .guard = {0},
+        .flag = 0,
+        .wait_queue = {
+            .tasks = wait_array,
+            .capacity = 10,
+            .size = 0,
+            .head = 0,
+            .tail = 0
+        }
+    },
+    .condvar = {NULL}
 };
 
 cond_t cond;
@@ -29,12 +34,10 @@ void idle_task(void** args) {
 }
 
 void dumb_task(void **args) {
-    lock_acquire(&lc);
     while (counter < 15000) {
         counter++;
     }
-    cond_signal(&cond);
-    lock_release(&lc);
+    sem_post(&sem);
     while (1) {
         ;
     }
@@ -42,11 +45,8 @@ void dumb_task(void **args) {
 
 void random_task(void **args) {
     int c = 0;
-    lock_acquire(&lc);
-    while (counter < 15000) {
-        cond_wait(&cond, &lc);
-    }
-    lock_release(&lc);
+    sem_wait(&sem);
+    sem_post(&sem);
     while (1) {
         ;
     }
