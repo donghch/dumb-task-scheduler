@@ -31,7 +31,15 @@ typedef struct {
  * 
  * @return int Returns 0 on success, -1 if initialization fails due to invalid parameters.
  */
-int task_queue_init(task_queue_t *queue, uint8_t capacity, task_t **tasks_array);
+int task_queue_init(task_queue_t *queue, uint8_t capacity);
+
+/**
+ * @brief Deinitialize a task queue.
+ * 
+ * @param queue Pointer to the task queue to be deinitialized.
+ * @return int Returns 0 on success, -1 if the queue is NULL or if deinitialization fails.
+ */
+int task_queue_deinit(task_queue_t *queue);
 
 /**
  * @brief Insert a task into the task queue.
