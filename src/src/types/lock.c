@@ -1,14 +1,41 @@
+#include <stdlib.h>
+#include <stdint.h>
 #include "types/lock.h"
 #include "types/spinlock.h"
-#include <stdlib.h>
+#include "types/task-queue.h"
 
 extern task_t *current_task;
 
-void lock_init(lock_t *lock) {
-    if (lock != NULL) {
-        spinlock_init(&lock->guard);
-        lock->flag = 0;
+int lock_init(lock_t *lock, uint8_t wait_queue_capacity) {
+
+    if (lock == NULL || wait_queue_capacity == 0) {
+        return -1; // Invalid arguments
     }
+
+    lock->flag = 0;
+    spinlock_init(&lock->guard);
+    if (task_queue_init(&lock->wait_queue, wait_queue_capacity) != 0) {
+        return -2; // Not enough memory
+    }
+
+    return 0; // Success
+}
+
+int lock_deinit(lock_t *lock) {
+
+    if (lock == NULL)
+        return -1;
+
+    lock->flag = 0;
+    lock->guard.flag = 0;
+    task_queue_deinit(&lock->wait_queue);
+    lock->wait_queue.size = 0;
+    lock->wait_queue.head = 0;
+    lock->wait_queue.tail = 0;
+    lock->wait_queue.capacity = 0;
+    lock->wait_queue.tasks = NULL;
+
+    return 0;
 }
 
 void lock_acquire(lock_t *lock) {

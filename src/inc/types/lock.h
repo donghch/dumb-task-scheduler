@@ -13,9 +13,18 @@ typedef struct {
 
 /**
  * Initializes a lock.
- * * @param lock Pointer to the lock to be initialized.
+ * @param lock Pointer to the lock to be initialized.
+ * @param wait_queue_capacity The maximum number of tasks that can wait for the lock.
+ * @return 0 on success, -1 if the arguments are invalid, -2 if not enough memory
  */
-void lock_init(lock_t *lock);
+int lock_init(lock_t *lock, uint8_t wait_queue_capacity);
+
+/**
+ * Deinitializes a lock.
+ * @param lock Pointer to the lock to be deinitialized.
+ * @return 0 on success, -1 if the arguments are invalid.
+ */
+int lock_deinit(lock_t *lock);
 
 /**
  * Try to acquire a lock.
