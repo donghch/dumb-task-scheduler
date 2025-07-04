@@ -7,4 +7,5 @@ target_sources(
     scheduler.c 
     task.c
     tasks.c
+    libc.c
 )

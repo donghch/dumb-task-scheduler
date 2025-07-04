@@ -64,33 +64,6 @@ void startup(void) {
     main();
 }
 
-void _exit(int status) {
-    // Infinite loop to indicate exit
-    while (1) {
-        // Optionally, you can add code to handle the exit status
-    }
-}
-
-void _close_r(int file) {
-    // No operation for closing a file
-}
-
-void _lseek_r(int file, int ptr, int dir) {
-    // No operation for seeking in a file
-}
-
-void _write_r(int file, const char *ptr, int len) {
-    // No operation for writing to a file
-}
-
-void _read_r(int file, char *ptr, int len) {
-    // No operation for reading from a file
-}
-
-void _sbrk_r(void *ptr) {
-    // No operation for setting the program break
-}
-
 extern task_t *select_next_task();
 
 void systick_handler_c(void) {
